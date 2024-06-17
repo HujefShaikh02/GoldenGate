@@ -24,12 +24,12 @@ public class SecurityConfiguration {
     private final AuthenticationProvider authenticationProvider;
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("/*"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE","Access-Control-Allow-Methods")); // Include other allowed methods as needed
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
-        configuration.addExposedHeader("Access-Control-Allow-Methods"); // Expose the Access-Control-Allow-Methods header
+        configuration.setAllowedOrigins(Arrays.asList("*")); // You may want to restrict this to specific origins
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS")); // Include OPTIONS for preflight
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Access-Control-Allow-Methods"));
+        configuration.setExposedHeaders(Arrays.asList("Access-Control-Allow-Methods")); // Expose the allowed methods header
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

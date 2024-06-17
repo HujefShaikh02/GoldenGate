@@ -3,6 +3,7 @@ package com.GoldenGate.GoldenGate.system.controller;
 
 import com.GoldenGate.GoldenGate.repository.UserRepository;
 import com.GoldenGate.GoldenGate.config.JwtService;
+import com.GoldenGate.GoldenGate.system.DTO.ExperienceDTO;
 import com.GoldenGate.GoldenGate.system.model.Experience;
 import com.GoldenGate.GoldenGate.system.service.ExperienceService;
 import com.GoldenGate.GoldenGate.user.User;
@@ -63,8 +64,8 @@ public class ExperienceController {
  */
 
     @GetMapping("")
-    public ResponseEntity<List<Experience>> getAllExperiences( @NonNull HttpServletRequest request,@NonNull HttpServletResponse response,
-    @NonNull FilterChain filterChain) {
+    public ResponseEntity<List<ExperienceDTO>> getAllExperiences(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
+                                                                 @NonNull FilterChain filterChain) {
 
 
          try {
@@ -96,11 +97,12 @@ public class ExperienceController {
                 // System.out.println(" User userDetails in profile creation"+userDetails);
 
                 int Userid= Math.toIntExact(userDetails.getUserId());
-                List<Experience> experiences = experienceService.getAllExperiences(Userid);
+                List<ExperienceDTO> experiences = experienceService.getAllExperiences(Userid);
                 if (experiences == null) {
                     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                 }
-
+                System.out.println("***********************");
+                System.out.println(experiences);
 
                 return ResponseEntity.ok(experiences);
             }

@@ -1,5 +1,6 @@
 package com.GoldenGate.GoldenGate.system.service;
 
+import com.GoldenGate.GoldenGate.system.DTO.ExperienceDTO;
 import com.GoldenGate.GoldenGate.system.model.Experience;
 import com.GoldenGate.GoldenGate.user.User;
 
@@ -14,5 +15,7 @@ public interface ExperienceService {
 
     Experience getExperienceById(Integer id);
 
-    List<Experience> getAllExperiences(int userid);
+    List<ExperienceDTO> getAllExperiences(int userId);
+
+    // List<Experience> getAllExperiences(int userid);
 }

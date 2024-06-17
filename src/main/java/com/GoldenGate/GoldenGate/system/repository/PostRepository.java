@@ -15,7 +15,12 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<Post, Long> {
 
 
+   // @Query("SELECT p FROM Post p JOIN FETCH p.images pi WHERE p.postId > ?2 AND p.user.userId <> ?1 ORDER BY p.postId ASC")
+    //Page<Post> findPostsForHomeFeed(Long userId, Long lastPostId, Pageable pageable);
 
+
+
+    Page<Post> findAll(Pageable pageable);
 
     List<Post> findByUser_UserId(Long userId);
 

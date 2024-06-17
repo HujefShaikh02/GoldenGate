@@ -2,6 +2,7 @@ package com.GoldenGate.GoldenGate.system.controller;
 
 import com.GoldenGate.GoldenGate.config.JwtService;
 import com.GoldenGate.GoldenGate.repository.UserRepository;
+import com.GoldenGate.GoldenGate.system.DTO.ProfileDTO;
 import com.GoldenGate.GoldenGate.system.model.Profile;
 import com.GoldenGate.GoldenGate.system.repository.ProfileRepository;
 import com.GoldenGate.GoldenGate.system.service.ProfileService;
@@ -25,7 +26,7 @@ import java.util.Optional;
 
 //@CrossOrigin(origins = "* ", allowedHeaders = "*")
 //@CrossOrigin(origins = "* ", allowedHeaders = "*")
-@CrossOrigin("/*")
+@CrossOrigin("*")
 @RestController
 
 @RequestMapping("/api/v1/profiles")
@@ -189,5 +190,74 @@ public class ProfileController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/profile")
+    public ResponseEntity<ProfileDTO> getProfileDetails(HttpServletRequest request) {
+        try {
+            final String authHeader = request.getHeader("Authorization");
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+
+            String jwt = authHeader.substring(7);
+            String userEmail = JwtService.extractUsername(jwt);
+
+            if (userEmail != null) {
+                Optional<User> optionalUser = repository.findByEmail(userEmail);
+                if (!optionalUser.isPresent()) {
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                }
+
+                User user = optionalUser.get();
+                Profile profile = profileRepository.findByUser_UserId(user.getUserId());
+                if (profile == null) {
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                }
+
+                // Convert Profile entity to ProfileDTO
+                ProfileDTO profileDTO = convertToDTO(profile, user.getEmail());
+
+                return ResponseEntity.ok(profileDTO);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping("/{profileId}")
+    public ResponseEntity<ProfileDTO> getProfileById(@PathVariable Integer profileId) {
+        Optional<Profile> profileOptional = profileRepository.findById(profileId);
+        if (!profileOptional.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        Profile profile = profileOptional.get();
+        User user = profile.getUser();
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        ProfileDTO profileDTO = convertToDTO(profile, user.getEmail());
+        return ResponseEntity.ok(profileDTO);
+    }
+
+
+
+    private ProfileDTO convertToDTO(Profile profile, String email) {
+
+        return ProfileDTO.builder()
+                .profileId(profile.getProfileId())
+                .avatar(profile.getAvatar())
+                .bio(profile.getBio())
+                .fullName(profile.getFullName())
+                .otherDetails(profile.getOtherDetails())
+                .userId(profile.getUser().getUserId())
+                .backgroundImage(profile.getBackgroundImage())
+                .profileType(profile.getProfileType())
+                .email(email)
+                .build();
+    }
+
 
 }
